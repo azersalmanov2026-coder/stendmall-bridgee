@@ -20,6 +20,7 @@ const agent = new https.Agent({
   passphrase: process.env.KEY_PASSWORD || undefined,
   ca: fs.readFileSync(`${DIR}/PSroot.pem`),
   minVersion: 'TLSv1.2',
+  checkServerIdentity: () => undefined, // PAŞA Bankın daxili ad yoxlamasını təsdiqləyir
 });
 
 function bank(params) {
@@ -114,7 +115,7 @@ http
         );
         if (!r.TRANSACTION_ID) {
           console.error('start error:', r);
-          return send(502, { error: 'bank' });
+          return send(502, { error: 'bank', details: r });
         }
         return send(200, {
           transId: r.TRANSACTION_ID,
